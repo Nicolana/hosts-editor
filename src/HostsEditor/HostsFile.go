@@ -13,16 +13,16 @@ type HostsFile struct {
 	Lines []HostsItem
 }
 
-func (this HostsItem) ToString() string {
+func (item HostsItem) ToString() string {
 	var res string = ""
-	if this.ip != "" && this.hosts != "" {
-		res = this.ip + " " + this.hosts
+	if item.ip != "" && item.hosts != "" {
+		res = item.ip + " " + item.hosts
 	}
-	if this.hasComments {
-		if this.ip != "" && this.hosts != "" {
-			res = res + " " + this.comments + "\n"
+	if item.hasComments {
+		if item.ip != "" && item.hosts != "" {
+			res = res + " " + item.comments + "\n"
 		} else {
-			res = this.comments
+			res = item.comments
 		}
 	}
 	return res

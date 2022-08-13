@@ -12,7 +12,8 @@ func main() {
 		return
 	}
 	// editor.PrintByIndex(6)
-	editor.PrintByIndex(13)
-	// editor.WriteFile()
+	// editor.PrintByIndex(13)
+	// editor.PrintLines()
+	editor.WriteFile()
 	// server.RunServer()
 }

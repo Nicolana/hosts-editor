@@ -17,18 +17,18 @@ type HostsEditor struct {
 }
 
 // 从文件中加载配置
-func (this HostsEditor) LoadFile() (HostsFile, error) {
+func (editor HostsEditor) LoadFile() (HostsFile, error) {
 	var err error
-	this.File, err = os.Open(HOSTS_FILE_PATH)
-	this.FileHandler = HostsFile{}
-	this.FileHandler.Lines = []HostsItem{}
+	editor.File, err = os.Open(GetHostsFilePath())
+	editor.FileHandler = HostsFile{}
+	editor.FileHandler.Lines = []HostsItem{}
 
 	if err != nil {
 		fmt.Println("Hosts文件打开失败!")
-		return this.FileHandler, err
+		return editor.FileHandler, err
 	}
-	defer this.File.Close()
-	reader := bufio.NewReader(this.File)
+	defer editor.File.Close()
+	reader := bufio.NewReader(editor.File)
 	index := 0
 	for {
 		str, err := reader.ReadString('\n')
@@ -62,17 +62,17 @@ func (this HostsEditor) LoadFile() (HostsFile, error) {
 			comments:     comment,
 			originString: str,
 		}
-		this.FileHandler.Lines = append(this.FileHandler.Lines, *row)
+		editor.FileHandler.Lines = append(editor.FileHandler.Lines, *row)
 	}
-	return this.FileHandler, nil
+	return editor.FileHandler, nil
 }
 
 // 将配置写回hosts
-func (this HostsEditor) WriteFile() {
-	lines := this.FileHandler.Lines
+func (editor HostsEditor) WriteFile() {
+	lines := editor.FileHandler.Lines
 	// 升序排序
 	sort.Slice(lines, func(prev, next int) bool { return lines[prev].index < lines[next].index })
-	file, err := os.OpenFile(HOSTS_FILE_PATH, os.O_WRONLY|os.O_CREATE, 0666)
+	file, err := os.OpenFile(GetHostsFilePath(), os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		fmt.Printf("写入文件错误 = %v\n", err)
 		return
@@ -86,10 +86,10 @@ func (this HostsEditor) WriteFile() {
 	writer.Flush()
 }
 
-func (this HostsEditor) PrintLines() {
-	fmt.Printf("%v\n", this.FileHandler.Lines)
+func (editor HostsEditor) PrintLines() {
+	fmt.Printf("%v\n", editor.FileHandler.Lines)
 }
 
-func (this HostsEditor) PrintByIndex(index int) {
-	fmt.Printf("%v\n", this.FileHandler.Lines[index])
+func (editor HostsEditor) PrintByIndex(index int) {
+	fmt.Printf("%v\n", editor.FileHandler.Lines[index])
 }
