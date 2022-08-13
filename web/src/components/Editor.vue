@@ -77,9 +77,9 @@ const onSearchChange = (val: string) => {
   <el-card class="box-card">
     <template #header>
       <div class="card-header">
-        <div class="title-search">
+        <!-- <div class="title-search">
           <span>Hosts管理</span>
-        </div>
+        </div> -->
         <div class="search-wrapper">
           <el-input v-model="searchText" class="w-50 m-2" placeholder="请输入域名搜索" :prefix-icon="Search"
             @input="onSearchChange" />

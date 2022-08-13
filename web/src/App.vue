@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import Editor from "./components/Editor.vue";
+import Layout from "./components/Layout.vue";
 
 </script>
 
 <template>
-  <Editor />
+  <Layout />
 </template>
 
 <style scoped>
