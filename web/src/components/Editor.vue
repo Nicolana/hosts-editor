@@ -81,7 +81,7 @@ const onSearchChange = (val: string) => {
           <span>Hosts管理</span>
         </div>
         <div class="search-wrapper">
-          <el-input v-model="searchText" class="w-50 m-2" size="small" placeholder="请输入域名" :prefix-icon="Search"
+          <el-input v-model="searchText" class="w-50 m-2" placeholder="请输入域名搜索" :prefix-icon="Search"
             @input="onSearchChange" />
         </div>
         <el-button type="primary" @click="onCreate">新增</el-button>

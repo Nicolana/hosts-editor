@@ -26,7 +26,7 @@
 <script lang="ts" setup>
 import { ElMessage } from "element-plus";
 import { reactive, ref, watchEffect } from "vue";
-import { ModalStatusCode, StatusCode } from "../utils/consts";
+import { DEFAULT_IP_ADDRESS, ModalStatusCode, StatusCode } from "../utils/consts";
 import { request } from "../utils/http";
 import { PayloadTypes } from "../utils/types";
 import type { FormInstance } from 'element-plus'
@@ -48,7 +48,7 @@ const props = defineProps({
 
 const form = reactive({
   hosts: "",
-  ip: "",
+  ip: DEFAULT_IP_ADDRESS,
   comments: "",
 });
 
@@ -64,7 +64,7 @@ const toggleVisible = () => {
 
 watchEffect(() => {
   form.hosts = props.rowInfo.hosts;
-  form.ip = props.rowInfo.ip;
+  form.ip = props.rowInfo?.ip || DEFAULT_IP_ADDRESS;
   form.comments = props.rowInfo.comments;
 });
 
