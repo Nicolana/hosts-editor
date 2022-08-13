@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"github.com/Nicolana/hosts-editor/src/utils"
 	"github.com/gin-gonic/gin"
 	"io"
 	"os"
@@ -98,13 +99,36 @@ func (editor *HostsEditor) PrintByIndex(index int) {
 }
 
 // GetLines 分页获取hosts数据
-func (editor *HostsEditor) GetLines(page, size int) gin.H {
-	var total = len(editor.FileHandler.Lines)
+func (editor *HostsEditor) GetLines(page, size int, search string) gin.H {
+	//var total = len(editor.FileHandler.Lines)
+	lines := utils.Filter(editor.FileHandler.Lines, func(item HostsItem) bool {
+		if strings.Contains(item.hosts, search) {
+			return true
+		}
+		return false
+	})
+	var list []gin.H
+	for _, value := range lines {
+		if !value.hasComments || (value.ip != "" && value.hosts != "") {
+			list = append(list, value.ToMap())
+		}
+	}
+	// 处理分页功能
+	var total = len(list)
+	if total > 1 {
+		var left = (page - 1) * size
+		var right = page * size
+		if right >= len(list) {
+			right = len(list) - 1
+		}
+		list = list[left:right]
+	}
+
 	return gin.H{
 		"page":  page,
 		"size":  size,
 		"total": total,
-		"data":  editor.FileHandler.HostsToMapArray(),
+		"data":  list,
 	}
 }
 

@@ -6,6 +6,7 @@ import (
 	"github.com/Nicolana/hosts-editor/src/server/models"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 func GetList(c *gin.Context) {
@@ -13,7 +14,13 @@ func GetList(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"message": "无法加载数据", "data": gin.H{}, "code": config.ErrorCode})
 	}
-	c.JSON(http.StatusOK, hostseditor.Editor.GetLines(1, 20))
+	search := c.DefaultQuery("search", "") // shortcut for c.Request.URL.Query().Get("lastname")
+	page := c.DefaultQuery("page", "1")
+	size := c.DefaultQuery("size", "20")
+	pageNum, _ := strconv.Atoi(page)
+	sizeNum, _ := strconv.Atoi(size)
+
+	c.JSON(http.StatusOK, gin.H{"message": "加载成功", "data": hostseditor.Editor.GetLines(pageNum, sizeNum, search), "code": config.SuccessCode})
 }
 
 func UpdateRow(c *gin.Context) {

@@ -1,18 +1,38 @@
 <script setup lang="ts">
 import { ElMessage } from 'element-plus';
-import { ref } from 'vue';
+import { Search } from '@element-plus/icons-vue'
+import { reactive, ref } from 'vue';
 import { ModalStatusCode, StatusCode } from '../utils/consts';
 import { request } from '../utils/http';
 import EditorEdit from './EditorEdit.vue';
+import { PaginationType } from '../utils/types';
 
 const tableData = ref([])
 const rowInfo = ref({})
 const modalRef = ref(null)
 const modalStatus = ref(ModalStatusCode.Create); // 默认是创建
+const searchText = ref('');
+const pagination = reactive<PaginationType>({
+  page: 1,
+  size: 20,
+  total: 0,
+})
 
 const loadList = () => {
-  request.get("/api/list").then(({ data: res }) => {
-    tableData.value = res.data;
+  const params: Partial<PaginationType> = {
+    page: pagination.page,
+    size: pagination.size
+  }
+  if (searchText.value) {
+    params.search = searchText.value
+  }
+
+  request.get("/api/list", { params }).then(({ data: res }) => {
+    if (res.code === StatusCode.Success) {
+      const { total, data: list } = res.data;
+      pagination.total = total;
+      tableData.value = list;
+    }
   })
 }
 
@@ -46,18 +66,29 @@ const onDelete = async (rowId: number) => {
     console.error(error)
   }
 }
+
+const onSearchChange = (val: string) => {
+  searchText.value = val;
+  loadList();
+}
 </script>
 
 <template>
-  <el-card class="box-card" :body-style="{ padding: 0 }">
+  <el-card class="box-card">
     <template #header>
       <div class="card-header">
-        <span>Hosts管理</span>
+        <div class="title-search">
+          <span>Hosts管理</span>
+        </div>
+        <div class="search-wrapper">
+          <el-input v-model="searchText" class="w-50 m-2" size="small" placeholder="请输入域名" :prefix-icon="Search"
+            @input="onSearchChange" />
+        </div>
         <el-button type="primary" @click="onCreate">新增</el-button>
       </div>
     </template>
     <el-table :data="tableData" style="width: 100%" size="large">
-      <el-table-column prop="index" label="行数" />
+      <el-table-column prop="index" width="100" label="行数" />
       <el-table-column prop="hosts" label="域名" />
       <el-table-column prop="ip" label="IP" />
       <el-table-column label="操作" width="200">
@@ -72,6 +103,10 @@ const onDelete = async (rowId: number) => {
         </template>
       </el-table-column>
     </el-table>
+    <div class="pagination-wrapper">
+      <el-pagination background layout="prev, pager, next" hide-on-single-page :total="pagination.total"
+        :page-size="pagination.size" />
+    </div>
   </el-card>
   <EditorEdit ref="modalRef" :rowInfo="rowInfo" @on-cancel="onCancel" @on-confirm="loadList"
     :modalStatus="modalStatus" />
@@ -82,5 +117,21 @@ const onDelete = async (rowId: number) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.title-search {
+  display: flex;
+  align-items: center;
+}
+
+.search-wrapper {
+  margin-left: 10px;
+}
+
+.pagination-wrapper {
+  padding: 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

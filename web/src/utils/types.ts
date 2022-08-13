@@ -4,3 +4,10 @@ export interface PayloadTypes {
   ip: string;
   comments?: string;
 }
+
+export interface PaginationType {
+  page: number;
+  size: number;
+  total: number;
+  search?: string;
+}
