@@ -1,19 +1,7 @@
 package main
 
-import (
-	hostseditor "hostswitcher/src/HostsEditor"
-)
+import server "hostswitcher/src/Server"
 
 func main() {
-	editor := new(hostseditor.HostsEditor)
-	var err error
-	editor.FileHandler, err = editor.LoadFile()
-	if err != nil {
-		return
-	}
-	// editor.PrintByIndex(6)
-	// editor.PrintByIndex(13)
-	// editor.PrintLines()
-	editor.WriteFile()
-	// server.RunServer()
+	server.RunServer()
 }
