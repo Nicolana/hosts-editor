@@ -1,4 +1,4 @@
-module hostswitcher
+module github.com/Nicolana/hosts-editor
 
 go 1.19
 
