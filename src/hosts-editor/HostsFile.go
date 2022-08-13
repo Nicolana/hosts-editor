@@ -30,9 +30,9 @@ func (item HostsItem) ToString() string {
 			comments = "#" + comments
 		}
 		if item.ip != "" && item.hosts != "" {
-			res += " " + item.comments + GetReturnSymbol()
+			res += " " + comments + GetReturnSymbol()
 		} else {
-			res = item.comments
+			res = comments
 		}
 	} else {
 		res += GetReturnSymbol()
