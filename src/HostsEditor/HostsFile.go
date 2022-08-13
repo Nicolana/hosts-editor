@@ -20,10 +20,12 @@ func (item HostsItem) ToString() string {
 	}
 	if item.hasComments {
 		if item.ip != "" && item.hosts != "" {
-			res = res + " " + item.comments + "\n"
+			res += " " + item.comments + GetReturnSymbol()
 		} else {
 			res = item.comments
 		}
+	} else {
+		res += GetReturnSymbol()
 	}
 	return res
 }
