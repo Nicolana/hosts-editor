@@ -13,7 +13,6 @@
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="clearForm(formRef)">重置</el-button>
         <el-button @click="onCancel"> 取消 </el-button>
         <el-button type="primary" @click="onConfirm" :loading="submitting">
           确定

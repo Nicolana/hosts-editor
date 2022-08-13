@@ -42,6 +42,9 @@ func (editor *HostsEditor) LoadFile() (HostsFile, error) {
 
 		// 切分出ip、host、comment, 如果带#符号，说明有注释
 		var text = TrimExtraSpace(strings.TrimSpace(str))
+		if text == "" {
+			continue
+		}
 		var comment string
 		var host string
 		var ip string
@@ -119,8 +122,9 @@ func (editor *HostsEditor) GetLines(page, size int, search string) gin.H {
 		var left = (page - 1) * size
 		var right = page * size
 		if right >= len(list) {
-			right = len(list) - 1
+			right = len(list)
 		}
+		fmt.Printf("left = %d, right = %d \n", left, right)
 		list = list[left:right]
 	}
 
@@ -145,6 +149,7 @@ func (editor *HostsEditor) UpdateLineByIndex(index int, hosts, ip, comments stri
 	line.hosts = hosts
 	line.ip = ip
 	line.comments = comments
+	line.hasComments = comments != ""
 	//fmt.Println("line =", line)
 	err := editor.WriteFile()
 	if err != nil {

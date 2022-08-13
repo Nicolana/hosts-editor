@@ -91,6 +91,7 @@ const onSearchChange = (val: string) => {
       <el-table-column prop="index" width="100" label="行数" />
       <el-table-column prop="hosts" label="域名" />
       <el-table-column prop="ip" label="IP" />
+      <el-table-column prop="comments" label="注释" />
       <el-table-column label="操作" width="200">
         <template #default="{ row }">
           <el-button type="primary" @click="onEdit(row)">修改</el-button>
