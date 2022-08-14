@@ -15,10 +15,18 @@ func InitRouter(r *gin.Engine) {
 	})
 
 	api := r.Group("/api")
+	hosts := api.Group("/hosts")
 	{
-		api.GET("/list", controller.GetList)
-		api.POST("/update", controller.UpdateRow)
-		api.POST("/delete", controller.DeleteRow)
-		api.POST("/add", controller.AddRow)
+		hosts.GET("/list", controller.GetList)
+		hosts.POST("/update", controller.UpdateRow)
+		hosts.POST("/delete", controller.DeleteRow)
+		hosts.POST("/add", controller.AddRow)
+	}
+	frp := api.Group("/frp")
+	{
+		frp.GET("/list", controller.GetForwards)
+		frp.POST("/update", controller.UpdateRow)
+		frp.POST("/delete", controller.DelForward)
+		frp.POST("/add", controller.AddRow)
 	}
 }

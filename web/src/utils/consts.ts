@@ -8,4 +8,9 @@ export enum ModalStatusCode {
   Create,
 }
 
+export enum NetworkType {
+  TCP = "tcp",
+  UDP = "udp",
+}
+
 export const DEFAULT_IP_ADDRESS = "127.0.0.1";

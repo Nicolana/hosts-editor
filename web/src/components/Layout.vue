@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import Editor from "./Editor.vue";
-
+import Editor from "./Hosts/Editor.vue";
+import FrpList from "./FrpClient/FrpList.vue";
 </script>
 
 <template>
@@ -25,7 +25,7 @@ import Editor from "./Editor.vue";
                     <span>Frp端口映射</span>
                 </span>
             </template>
-            FRP 端口映射工具开发
+            <FrpList />
         </el-tab-pane>
     </el-tabs>
 </template>
