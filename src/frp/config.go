@@ -1,7 +1,24 @@
 package frp
 
-var ExecPath = "D:/Git/hosts-editor/lib/bin/frp/windows/frpc.exe"
+import (
+	"github.com/Nicolana/hosts-editor/src/utils"
+	"runtime"
+)
 
-var IniConfigPath = "D:/Git/hosts-editor/lib/bin/frp/conf/frpc.ini"
+const goos = runtime.GOOS
 
-var LogFilePath = "D:/Git/hosts-editor/log/frp-log.txt"
+var rootPath, _ = utils.GetRootPath()
+
+func getExecPath() string {
+	if goos == "windows" {
+		return rootPath + "/lib/bin/frp/windows/frpc.exe"
+	}
+	if goos == "linux" {
+		return rootPath + "/lib/bin/frp/linux/frpc"
+	}
+	return rootPath + "/lib/bin/frp/darwin/frpc"
+}
+
+var IniConfigPath = rootPath + "/lib/bin/frp/conf/frpc.ini"
+
+var LogFilePath = rootPath + "/log/frp-log.txt"

@@ -31,7 +31,7 @@ func (f *frp) Start() error {
 		},
 	}
 	// list files
-	pid, err := os.StartProcess(ExecPath, []string{"frpc", "-c", IniConfigPath}, procAttr)
+	pid, err := os.StartProcess(getExecPath(), []string{"frpc", "-c", IniConfigPath}, procAttr)
 	if err != nil {
 		fmt.Printf("Error %v starting process!", err)
 		os.Exit(1)

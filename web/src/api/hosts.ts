@@ -9,9 +9,9 @@ export const deletHosts = (data: any) => {
 };
 
 export const updateHosts = (data: any) => {
-  return request.post("/api/update", data);
+  return request.post("/hosts/update", data);
 };
 
 export const addHosts = (data: any) => {
-  return request.post("/api/add", data);
+  return request.post("/hosts/add", data);
 };
