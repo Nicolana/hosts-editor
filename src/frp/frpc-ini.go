@@ -97,12 +97,53 @@ func (f *frpcIni) GetList(page, size int, search string) gin.H {
 	}
 }
 
+func (f *frpcIni) ToMap(item ini.Section) (gin.H, error) {
+	return gin.H{
+		"type":        item.Key("type").Value(),
+		"local_ip":    item.Key("local_ip").Value(),
+		"local_port":  item.Key("local_port").Value(),
+		"remote_port": item.Key("remote_port").Value(),
+	}, nil
+}
+
 // UpdateSecByName 根据Sec名称更新该Sec中的映射数据
-func (f *frpcIni) UpdateSecByName(item models.FrpSectionType) (*ServerConfig, error) {
+func (f *frpcIni) UpdateSecByName(item models.FrpSectionType) (gin.H, error) {
 	sec := f.cfg.Section(item.Name)
+	sec.Key("type").SetValue(item.NetType)
+	sec.Key("local_ip").SetValue(item.LocalIp)
+	sec.Key("local_port").SetValue(strconv.Itoa(item.LocalPort))
+	sec.Key("remote_port").SetValue(strconv.Itoa(item.RemotePort))
 	err := f.Save()
 	if err != nil {
-		return &ServerConfig{}, err
+		return gin.H{}, err
 	}
-	return f.GetCommon(), nil
+	return f.ToMap(*sec)
+}
+
+// AddNewSec 新增Sec数据
+func (f *frpcIni) AddNewSec(item models.FrpSectionType) (gin.H, error) {
+	sec, err := f.cfg.NewSection(item.Name)
+	if err != nil {
+		return gin.H{}, err
+	}
+	sec.Key("type").SetValue(item.NetType)
+	sec.Key("local_ip").SetValue(item.LocalIp)
+	sec.Key("local_port").SetValue(strconv.Itoa(item.LocalPort))
+	sec.Key("remote_port").SetValue(strconv.Itoa(item.RemotePort))
+	err = f.Save()
+	if err != nil {
+		return gin.H{}, err
+	}
+	return f.ToMap(*sec)
+}
+
+// DelSec 根据Name删除一条Section
+func (f *frpcIni) DelSec(name string) (gin.H, error) {
+	sec := f.cfg.Section(name)
+	f.cfg.DeleteSection(name)
+	err := f.Save()
+	if err != nil {
+		return gin.H{}, err
+	}
+	return f.ToMap(*sec)
 }

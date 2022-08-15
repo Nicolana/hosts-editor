@@ -73,6 +73,7 @@ const toggleVisible = () => {
 };
 
 watchEffect(() => {
+  form.name = props.rowInfo.name;
   form.type = props.rowInfo.type;
   form.local_ip = props.rowInfo?.local_ip || DEFAULT_IP_ADDRESS;
   form.local_port = props.rowInfo?.local_port ?? '';
@@ -86,6 +87,7 @@ const onCancel = () => {
 
 const onConfirm = async () => {
   const payload: FrpPayloadTypes = {
+    name: form.name,
     type: form.type,
     local_ip: form.local_ip,
     local_port: +form.local_port,
@@ -93,7 +95,6 @@ const onConfirm = async () => {
   };
   submitting.value = true;
   if (props.modalStatus === ModalStatusCode.Edit) {
-    payload.name = props.rowInfo.name;
     try {
       const { data: res } = await updateForward(payload);
       if (res.code === StatusCode.Success) {

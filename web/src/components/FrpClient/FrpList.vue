@@ -55,9 +55,9 @@ const onCancel = () => {
   rowInfo.value = {}
 }
 
-const onDelete = async (rowId: number) => {
+const onDelete = async (name: string) => {
   try {
-    const { data: res } = await delForward({ row: rowId })
+    const { data: res } = await delForward({ name })
     if (res.code === StatusCode.Success) {
       ElMessage.success(res.message);
       loadList();
@@ -97,7 +97,7 @@ const onSearchChange = (val: string) => {
         <template #default="{ row }">
           <el-button type="primary" @click="onEdit(row)">修改</el-button>
           <el-popconfirm title="确定删除该端口映射么?" confirm-button-text="确定" cancel-button-text="取消"
-            @confirm="onDelete(row.index)">
+            @confirm="onDelete(row.name)">
             <template #reference>
               <el-button type="danger">删除</el-button>
             </template>

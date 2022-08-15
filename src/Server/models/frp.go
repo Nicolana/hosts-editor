@@ -10,6 +10,10 @@ type FrpSectionType struct {
 	Name       string `form:"name" json:"name" xml:"name" binding:"required"`
 	NetType    string `form:"type" json:"type" xml:"type"  binding:"required"`
 	LocalIp    string `form:"local_ip" json:"local_ip" xml:"local_ip" binding:"required"`
-	LocalPort  string `form:"local_port" json:"local_port" xml:"local_port" binding:"required"`
-	RemotePort string `form:"remote_port" json:"remote_port" xml:"remote_port" binding:"required"`
+	LocalPort  int    `form:"local_port" json:"local_port" xml:"local_port" binding:"required"`
+	RemotePort int    `form:"remote_port" json:"remote_port" xml:"remote_port" binding:"required"`
+}
+
+type FrpDelSectionType struct {
+	Name string `form:"name" json:"name" xml:"name" binding:"required"`
 }

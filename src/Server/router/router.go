@@ -25,8 +25,8 @@ func InitRouter(r *gin.Engine) {
 	frp := api.Group("/frp")
 	{
 		frp.GET("/list", controller.GetForwards)
-		frp.POST("/update", controller.UpdateRow)
+		frp.POST("/update", controller.UpdateForward)
 		frp.POST("/delete", controller.DelForward)
-		frp.POST("/add", controller.AddRow)
+		frp.POST("/add", controller.AddForward)
 	}
 }
