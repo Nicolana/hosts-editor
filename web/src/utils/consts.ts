@@ -13,4 +13,9 @@ export enum NetworkType {
   UDP = "udp",
 }
 
+export enum FrpExecStatus {
+  Running = 1,
+  Stopped = 2,
+}
+
 export const DEFAULT_IP_ADDRESS = "127.0.0.1";

@@ -69,3 +69,57 @@ func GetForwards(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "加载成功", "data": frp.FrpcIni.GetList(pageNum, sizeNum, search), "code": config.SuccessCode})
 }
+
+// StartFrp 启动FRP客户端
+func StartFrp(c *gin.Context) {
+	if isAlive, _ := frp.Frp.IsAlive(); isAlive {
+		c.JSON(http.StatusOK, gin.H{"message": "FRP在运行中", "data": gin.H{}, "code": config.ErrorCode})
+		return
+	}
+
+	if err := frp.Frp.Start(); err != nil {
+		c.JSON(http.StatusOK, gin.H{"message": "FRP启动失败: " + err.Error(), "data": gin.H{}, "code": config.ErrorCode})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "FRP启动成功", "data": gin.H{}, "code": config.SuccessCode})
+}
+
+// StopFrp 停止FRP客户端
+func StopFrp(c *gin.Context) {
+	if err := frp.Frp.Stop(); err != nil {
+		c.JSON(http.StatusOK, gin.H{"message": "FRP停止失败", "data": gin.H{}, "code": config.ErrorCode})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "FRP已停止", "data": gin.H{}, "code": config.SuccessCode})
+}
+
+// RestartFrp 重启FRP客户端
+func RestartFrp(c *gin.Context) {
+	if err := frp.Frp.Restart(); err != nil {
+		c.JSON(http.StatusOK, gin.H{"message": "FRP重启失败", "data": gin.H{}, "code": config.ErrorCode})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "FRP重启中", "data": gin.H{}, "code": config.SuccessCode})
+}
+
+// GetFrpStatus 获取运行状态 - 检查是否在运行
+func GetFrpStatus(c *gin.Context) {
+	if exists, _ := frp.Frp.IsAlive(); exists {
+		c.JSON(http.StatusOK, gin.H{"message": "FRP活着", "data": gin.H{
+			"status": 1,
+		}, "code": config.SuccessCode})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "FRP已停止", "data": gin.H{"status": 2}, "code": config.SuccessCode})
+}
+
+// GetLog 获取日志文件
+func GetLog(c *gin.Context) {
+	log, err := frp.Frp.GetLog()
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"message": "日志获取失败: " + err.Error(), "data": gin.H{}, "code": config.ErrorCode})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "日志获取成功", "data": log, "code": config.SuccessCode})
+}

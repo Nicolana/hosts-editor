@@ -30,15 +30,11 @@ func (f *frp) Start() error {
 			file,
 		},
 	}
-	// list files
-	pid, err := os.StartProcess(getExecPath(), []string{"frpc", "-c", IniConfigPath}, procAttr)
-	if err != nil {
-		fmt.Printf("Error %v starting process!", err)
-		os.Exit(1)
+	if pid, err := os.StartProcess(getExecPath(), []string{"frpc", "-c", IniConfigPath}, procAttr); err != nil {
+		return err
+	} else {
+		f.pid = pid // 缓存起来
 	}
-	fmt.Println("进程ID =", pid.Pid)
-	f.pid = pid // 缓存起来
-	fmt.Printf("The process is %v\n", pid)
 	return nil
 }
 
@@ -61,8 +57,11 @@ func (f *frp) Stop() error {
 	return err
 }
 
-// isAlive 查看frp是否还存活状态
-func (f *frp) isAlive() (bool, error) {
+// IsAlive 查看frp是否还存活状态
+func (f *frp) IsAlive() (bool, error) {
+	if f.pid == nil {
+		return false, errors.New("错误，FRP未启动")
+	}
 	return process.PidExists(int32(f.pid.Pid))
 }
 

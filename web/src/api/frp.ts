@@ -15,3 +15,19 @@ export const updateForward = (data: any) => {
 export const addForward = (data: any) => {
   return request.post("/frp/add", data);
 };
+
+export const startFrp = () => {
+  return request.get("/frp/start");
+};
+
+export const stopFrp = () => {
+  return request.get("/frp/stop");
+};
+
+export const getFrpStatus = () => {
+  return request.get("/frp/status");
+};
+
+export const restartFrp = () => {
+  return request.get("/frp/restart");
+};

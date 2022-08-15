@@ -24,9 +24,19 @@ func InitRouter(r *gin.Engine) {
 	}
 	frp := api.Group("/frp")
 	{
+		// ini配置
 		frp.GET("/list", controller.GetForwards)
 		frp.POST("/update", controller.UpdateForward)
 		frp.POST("/delete", controller.DelForward)
 		frp.POST("/add", controller.AddForward)
+
+		// frp客户端
+		frp.GET("/start", controller.StartFrp)
+		frp.GET("/stop", controller.StopFrp)
+		frp.GET("/restart", controller.RestartFrp)
+		frp.GET("/status", controller.GetFrpStatus)
+
+		// 日志文件
+		frp.GET("/log", controller.GetLog)
 	}
 }

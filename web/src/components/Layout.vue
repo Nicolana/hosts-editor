@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import Editor from "./Hosts/Editor.vue";
 import FrpList from "./FrpClient/FrpList.vue";
+import FrpStatus from "./FrpClient/FrpStatus.vue";
 </script>
 
 <template>
@@ -25,7 +26,10 @@ import FrpList from "./FrpClient/FrpList.vue";
                     <span>Frp端口映射</span>
                 </span>
             </template>
-            <FrpList />
+            <div>
+                <FrpStatus />
+                <FrpList />
+            </div>
         </el-tab-pane>
     </el-tabs>
 </template>
