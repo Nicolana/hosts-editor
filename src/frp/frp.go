@@ -3,6 +3,7 @@ package frp
 import (
 	"errors"
 	"fmt"
+	"github.com/Nicolana/hosts-editor/src/utils"
 	"github.com/shirou/gopsutil/process"
 	"io"
 	"os"
@@ -17,6 +18,12 @@ var Frp = new(frp)
 
 // Start 启动Frp
 func (f *frp) Start() error {
+	if !utils.PathExists(LogRootPath) {
+		fmt.Println("路径不存在")
+		if err := os.Mkdir(LogFilePath, os.ModePerm); err != nil {
+			return err
+		}
+	}
 	env := os.Environ()
 	file, err := os.OpenFile(LogFilePath, os.O_WRONLY|os.O_CREATE|os.O_SYNC|os.O_TRUNC, 0666)
 	if err != nil {
@@ -50,6 +57,9 @@ func (f *frp) GetLog() ([]byte, error) {
 
 // Stop 关闭Frp
 func (f *frp) Stop() error {
+	if f.pid == nil {
+		return errors.New("frp未启动")
+	}
 	err := f.pid.Kill()
 	if err != nil {
 		return err
@@ -67,8 +77,11 @@ func (f *frp) IsAlive() (bool, error) {
 
 // Restart 重启Frp
 func (f *frp) Restart() error {
-	if err := f.Stop(); err != nil {
-		return err
+	if f.pid != nil {
+		if err := f.pid.Kill(); err != nil {
+			return err
+		}
+
 	}
 	return f.Start()
 }

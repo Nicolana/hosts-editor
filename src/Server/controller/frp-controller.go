@@ -88,7 +88,7 @@ func StartFrp(c *gin.Context) {
 // StopFrp 停止FRP客户端
 func StopFrp(c *gin.Context) {
 	if err := frp.Frp.Stop(); err != nil {
-		c.JSON(http.StatusOK, gin.H{"message": "FRP停止失败", "data": gin.H{}, "code": config.ErrorCode})
+		c.JSON(http.StatusOK, gin.H{"message": "FRP停止失败: " + err.Error(), "data": gin.H{}, "code": config.ErrorCode})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "FRP已停止", "data": gin.H{}, "code": config.SuccessCode})
@@ -97,7 +97,7 @@ func StopFrp(c *gin.Context) {
 // RestartFrp 重启FRP客户端
 func RestartFrp(c *gin.Context) {
 	if err := frp.Frp.Restart(); err != nil {
-		c.JSON(http.StatusOK, gin.H{"message": "FRP重启失败", "data": gin.H{}, "code": config.ErrorCode})
+		c.JSON(http.StatusOK, gin.H{"message": "FRP重启失败: " + err.Error(), "data": gin.H{}, "code": config.ErrorCode})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "FRP重启中", "data": gin.H{}, "code": config.SuccessCode})

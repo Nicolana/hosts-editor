@@ -21,4 +21,6 @@ func getExecPath() string {
 
 var IniConfigPath = rootPath + "/lib/bin/frp/conf/frpc.ini"
 
-var LogFilePath = rootPath + "/log/frp-log.txt"
+var LogRootPath = rootPath + "/log"
+
+var LogFilePath = LogRootPath + "/frp-log.txt"
