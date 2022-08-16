@@ -5,11 +5,13 @@ import { reactive, ref } from 'vue';
 import { ModalStatusCode, StatusCode } from '../../utils/consts';
 import EditorEdit from './FrpEdit.vue';
 import { PaginationType } from '../../utils/types';
-import { getForwards, delForward } from '../../api/frp';
+import { getForwards, delForward, getServerConfig } from '../../api/frp';
+import FrpServerEdit from './FrpServerEdit.vue';
 
 const tableData = ref([])
 const rowInfo = ref({})
 const modalRef = ref(null)
+const serverModalRef = ref()
 const modalStatus = ref(ModalStatusCode.Create); // 默认是创建
 const searchText = ref('');
 const pagination = reactive<PaginationType>({
@@ -17,6 +19,16 @@ const pagination = reactive<PaginationType>({
   size: 20,
   total: 0,
 })
+
+const serverConfig = ref({});
+
+const loadServerConfig = async () => {
+  const { data: res } = await getServerConfig()
+  if (res.code === StatusCode.Success) {
+    serverConfig.value = res.data;
+  }
+}
+loadServerConfig();
 
 const loadList = () => {
   const params: Partial<PaginationType> = {
@@ -71,6 +83,10 @@ const onSearchChange = (val: string) => {
   searchText.value = val;
   loadList();
 }
+
+const onServerEdit = () => {
+  serverModalRef.value.toggleVisible();
+}
 </script>
 
 <template>
@@ -84,7 +100,10 @@ const onSearchChange = (val: string) => {
           <el-input v-model="searchText" class="w-50 m-2" placeholder="请输入名称搜索" :prefix-icon="Search"
             @input="onSearchChange" />
         </div>
-        <el-button type="primary" @click="onCreate">新增</el-button>
+        <div>
+          <el-button @click="onServerEdit">服务器配置</el-button>
+          <el-button type="primary" @click="onCreate">新增</el-button>
+        </div>
       </div>
     </template>
     <el-table :data="tableData" style="width: 100%" size="large">
@@ -112,6 +131,7 @@ const onSearchChange = (val: string) => {
   </el-card>
   <EditorEdit ref="modalRef" :rowInfo="rowInfo" @on-cancel="onCancel" @on-confirm="loadList"
     :modalStatus="modalStatus" />
+  <FrpServerEdit ref="serverModalRef" :row-info="serverConfig" @on-confirm="loadServerConfig" />
 </template>
 
 <style scoped>

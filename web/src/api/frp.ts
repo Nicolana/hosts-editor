@@ -31,3 +31,10 @@ export const getFrpStatus = () => {
 export const restartFrp = () => {
   return request.get("/frp/restart");
 };
+
+export const getServerConfig = () => {
+  return request.get("/frp/server");
+};
+export const updateServerConfig = (payload: any) => {
+  return request.post("/frp/server", payload);
+};

@@ -21,3 +21,9 @@ export interface FrpPayloadTypes {
   local_port: number;
   remote_port: number;
 }
+
+export interface FrpServerTypes {
+  server_addr: string;
+  server_port: number;
+  token: string;
+}

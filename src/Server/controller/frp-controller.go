@@ -123,3 +123,25 @@ func GetLog(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "日志获取成功", "data": log, "code": config.SuccessCode})
 }
+
+// GetServerConfig 读取服务器配置
+func GetServerConfig(c *gin.Context) {
+	serverConfig := frp.FrpcIni.GetCommon()
+	c.JSON(http.StatusOK, gin.H{"message": "获取成功！", "data": serverConfig, "code": config.SuccessCode})
+}
+
+// UpdateServerConfig 更新服务器配置
+func UpdateServerConfig(c *gin.Context) {
+	var updateData models.FrpCommonSection
+	if err := c.BindJSON(&updateData); err != nil {
+		c.JSON(http.StatusOK, gin.H{"message": "参数有误: " + err.Error(), "data": gin.H{}, "code": config.ErrorCode})
+		return
+	}
+
+	common, err := frp.FrpcIni.UpdateCommon(updateData)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"message": "无法更新: " + err.Error(), "data": gin.H{}, "code": config.ErrorCode})
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "更新服务器配置成功！", "data": common, "code": config.SuccessCode})
+}

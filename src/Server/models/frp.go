@@ -17,3 +17,9 @@ type FrpSectionType struct {
 type FrpDelSectionType struct {
 	Name string `form:"name" json:"name" xml:"name" binding:"required"`
 }
+
+type FrpCommonSection struct {
+	ServerAddr string `form:"server_addr" json:"server_addr" xml:"server_addr"  binding:"required"`
+	ServerPort int    `form:"server_port" json:"server_port" xml:"server_port" binding:"required"`
+	Token      string `form:"token" json:"token" xml:"token" binding:"required"`
+}

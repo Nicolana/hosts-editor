@@ -38,21 +38,33 @@ func (f *frpcIni) Save() error {
 	return f.cfg.SaveTo(IniConfigPath)
 }
 
-func (f *frpcIni) GetCommon() *ServerConfig {
+func (f *frpcIni) GetCommon() gin.H {
 	common := &ServerConfig{}
 	commonSec := f.cfg.Section(ServerConfigName)
 	common.server_port, _ = strconv.Atoi(commonSec.Key("server_port").Value())
 	common.server_addr = commonSec.Key("server_addr").Value()
 	common.token = commonSec.Key("token").Value()
-	return common
+	return gin.H{
+		"server_addr": common.server_addr,
+		"server_port": common.server_port,
+		"token":       common.token,
+	}
 }
 
 // UpdateCommon 更新Common的数据
-func (f *frpcIni) UpdateCommon(key, value string) (*ServerConfig, error) {
-	f.cfg.Section(ServerConfigName).Key(key).SetValue(value)
-	err := f.Save()
-	if err != nil {
-		return &ServerConfig{}, err
+func (f *frpcIni) UpdateCommon(item models.FrpCommonSection) (gin.H, error) {
+	// 如果当前服务器数据不存在，则创建该数据Section
+	if !f.cfg.HasSection(ServerConfigName) {
+		if _, err := f.cfg.NewSection(ServerConfigName); err != nil {
+			return gin.H{}, err
+		}
+	}
+	sec := f.cfg.Section(ServerConfigName)
+	sec.Key("server_addr").SetValue(item.ServerAddr)
+	sec.Key("server_port").SetValue(strconv.Itoa(item.ServerPort))
+	sec.Key("token").SetValue(item.Token)
+	if err := f.Save(); err != nil {
+		return gin.H{}, err
 	}
 	return f.GetCommon(), nil
 }

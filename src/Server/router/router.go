@@ -38,5 +38,9 @@ func InitRouter(r *gin.Engine) {
 
 		// 日志文件
 		frp.GET("/log", controller.GetLog)
+
+		// frp 服务器端设置
+		frp.GET("/server", controller.GetServerConfig)
+		frp.POST("/server", controller.UpdateServerConfig)
 	}
 }
