@@ -6,6 +6,7 @@ import { ModalStatusCode, StatusCode } from "../../utils/consts";
 import EditorEdit from "./FrpEdit.vue";
 import { FrpServerTypes, PaginationType } from "../../utils/types";
 import { getForwards, delForward, getServerConfig } from "../../api/frp";
+import FrpStatus from "./FrpStatus.vue";
 import FrpServerEdit from "./FrpServerEdit.vue";
 import useFrpStore from "@/store/useFrpStore";
 
@@ -91,12 +92,10 @@ const onServerEdit = () => {
 </script>
 
 <template>
+  <FrpStatus />
   <el-card class="box-card">
     <template #header>
       <div class="card-header">
-        <!-- <div class="title-search">
-          <span>Hosts管理</span>
-        </div> -->
         <div class="search-wrapper">
           <el-input
             v-model="searchText"
@@ -106,7 +105,6 @@ const onServerEdit = () => {
             @input="onSearchChange"
           />
         </div>
-        <div>服务器地址：{{ serverConfig.server_addr }}</div>
         <div>
           <el-button @click="onServerEdit">服务器配置</el-button>
           <el-button type="primary" @click="onCreate">新增</el-button>

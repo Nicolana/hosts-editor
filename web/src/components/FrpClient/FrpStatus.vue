@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import useFrpStore from "@/store/useFrpStore";
 import { ElMessage, messageConfig } from "element-plus";
-import { computed, ref } from "vue";
+import { computed, onBeforeUnmount, ref } from "vue";
 import { getFrpStatus, restartFrp, startFrp, stopFrp } from "../../api/frp";
 import { FrpExecStatus, StatusCode } from "../../utils/consts";
 
@@ -54,9 +54,14 @@ const serverConfig = computed(() => frpStore.server);
 
 getStatus();
 
-// setInterval(() => {
-//     getStatus();
-// }, 1000 * 2)
+let statusInfoId = setInterval(() => {
+  getStatus();
+}, 1000 * 2);
+
+onBeforeUnmount(() => {
+  clearInterval(statusInfoId);
+  console.log("卸载frp状态加载");
+});
 </script>
 
 <template>
