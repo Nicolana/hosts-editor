@@ -13,6 +13,24 @@ const onTabChange = (name: TabPanelName) => {
   router.push(name as string);
   current.value = name;
 };
+
+const menus = ref([
+  {
+    path: "/",
+    name: "Hosts管理",
+    icon: "Calendar",
+  },
+  {
+    path: "/frp",
+    name: "Frp端口映射",
+    icon: "DataAnalysis",
+  },
+  {
+    path: "/base64",
+    name: "Base64加解码",
+    icon: "DataAnalysis",
+  },
+]);
 </script>
 
 <template>
@@ -22,23 +40,13 @@ const onTabChange = (name: TabPanelName) => {
     class="demo-tabs"
     @tab-change="onTabChange"
   >
-    <el-tab-pane name="/">
+    <el-tab-pane v-for="item in menus" :key="item.path" :name="item.path">
       <template #label>
         <span class="custom-tabs-label">
           <el-icon>
-            <calendar />
+            <component :is="item.icon" />
           </el-icon>
-          <span>Hosts管理</span>
-        </span>
-      </template>
-    </el-tab-pane>
-    <el-tab-pane name="/frp">
-      <template #label>
-        <span class="custom-tabs-label">
-          <el-icon>
-            <DataAnalysis />
-          </el-icon>
-          <span>Frp端口映射</span>
+          <span>{{ item.name }}</span>
         </span>
       </template>
     </el-tab-pane>

@@ -28,6 +28,15 @@ export const routes: Array<RouteRecordRaw> = [
           keepAlive: true,
         },
       },
+      {
+        path: "/base64",
+        name: "Base64",
+        component: () => import("@/components/Base64/index.vue"),
+        meta: {
+          title: "Base64加解码",
+          keepAlive: true,
+        },
+      },
     ],
   },
 ];
@@ -38,7 +47,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  document.title = to.meta.title as string;
+  document.title = `Nic的私有工具 - ${to.meta.title}`;
   next();
 });
 
