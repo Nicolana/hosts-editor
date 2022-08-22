@@ -61,6 +61,7 @@ func (f *frp) Stop() error {
 		return errors.New("frp未启动")
 	}
 	err := f.pid.Kill()
+	f.pid.Wait()
 	if err != nil {
 		return err
 	}
@@ -79,9 +80,9 @@ func (f *frp) IsAlive() (bool, error) {
 func (f *frp) Restart() error {
 	if f.pid != nil {
 		if err := f.pid.Kill(); err != nil {
+			f.pid.Wait()
 			return err
 		}
-
 	}
 	return f.Start()
 }

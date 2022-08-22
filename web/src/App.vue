@@ -1,10 +1,9 @@
-<script setup lang="ts">
-const Layout = import("./components/Layout.vue");
+<script lang="ts" setup>
+import Layout from "@/components/Layout.vue";
 </script>
 
 <template>
   <Layout />
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
