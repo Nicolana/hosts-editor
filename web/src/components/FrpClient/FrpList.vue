@@ -117,15 +117,6 @@ const onServerEdit = () => {
       <el-table-column prop="local_ip" label="本地IP" />
       <el-table-column prop="local_port" label="本地端口" />
       <el-table-column prop="remote_port" label="服务器端口" />
-      <el-table-column prop="realProps" label="实际地址">
-        <template #default="{ row }">
-          <div>
-            <a href="#">{{
-              `${serverConfig.server_addr}:${row.remote_port}`
-            }}</a>
-          </div>
-        </template>
-      </el-table-column>
       <el-table-column label="操作" width="200">
         <template #default="{ row }">
           <el-button type="primary" @click="onEdit(row)">修改</el-button>

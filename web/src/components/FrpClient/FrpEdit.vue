@@ -33,26 +33,47 @@
         </el-select>
       </el-form-item>
       <el-form-item
-        label="本地IP地址"
+        label="内网地址"
         prop="local_ip"
-        :rules="[{ required: true, message: '请输入需要映射的本地IP地址' }]"
+        :rules="[{ required: true, message: '请输入需要映射的内网地址' }]"
       >
         <el-input v-model="form.local_ip" autocomplete="off" />
       </el-form-item>
       <el-form-item
-        label="本地端口"
+        label="内网端口"
         prop="local_port"
-        :rules="[{ required: true, message: '请输入需要映射的本地端口' }]"
+        :rules="[{ required: true, message: '请输入需要映射的内网端口' }]"
       >
         <el-input v-model="form.local_port" autocomplete="off" />
       </el-form-item>
       <el-form-item label="服务器端口" prop="remote_port">
         <el-input v-model="form.remote_port" autocomplete="off" />
       </el-form-item>
+      <el-form-item label="转发带宽" prop="bandwidth_limit">
+        <el-input v-model="form.bandwidth_limit" autocomplete="off" />
+      </el-form-item>
+      <el-form-item label="插件" prop="plugin">
+        <el-input v-model="form.plugin" autocomplete="off" />
+      </el-form-item>
+      <el-form-item label="插件用户" prop="plugin_user">
+        <el-input v-model="form.plugin_user" autocomplete="off" />
+      </el-form-item>
+      <el-form-item label="插件密码" prop="plugin_passwd">
+        <el-input v-model="form.plugin_user" autocomplete="off" />
+      </el-form-item>
+      <el-form-item label="sk" prop="sk">
+        <el-input v-model="form.sk" autocomplete="off" />
+      </el-form-item>
       <el-form-item label="加密传输" prop="use_encryption">
         <el-radio-group v-model="form.use_encryption" class="ml-4">
-          <el-radio label="1" size="large">Option 1</el-radio>
-          <el-radio label="2" size="large">Option 2</el-radio>
+          <el-radio :label="true">加密</el-radio>
+          <el-radio :label="false">不加密</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label="压缩传输" prop="use_encryption">
+        <el-radio-group v-model="form.use_compression" class="ml-4">
+          <el-radio :label="true">压缩</el-radio>
+          <el-radio :label="false">不压缩</el-radio>
         </el-radio-group>
       </el-form-item>
     </el-form>
@@ -101,7 +122,13 @@ const form = reactive({
   local_ip: DEFAULT_IP_ADDRESS,
   local_port: "", // 0 ~ 65535
   remote_port: "",
+  plugin: "",
+  sk: "",
+  plugin_user: "",
+  plugin_passwd: "",
+  bandwidth_limit: "",
   use_encryption: false,
+  use_compression: false,
 });
 
 const frpTypes = ref([
