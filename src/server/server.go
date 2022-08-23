@@ -8,5 +8,5 @@ import (
 func RunServer() {
 	r := gin.Default()
 	router.InitRouter(r)
-	r.Run()
+	r.Run(":8022")
 }
