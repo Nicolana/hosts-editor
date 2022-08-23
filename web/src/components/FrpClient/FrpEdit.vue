@@ -1,23 +1,59 @@
 <template>
-  <el-dialog v-model="visible" title="Hosts编辑" append-to-body width="500px">
-    <el-form ref="formRef" :model="form" label-width="auto" label-position="top">
-      <el-form-item label="名称" prop="name" :rules="[{ required: true, message: '请输入名称' }]">
+  <el-dialog v-model="visible" title="Hosts编辑" append-to-body>
+    <el-form
+      ref="formRef"
+      :inline="true"
+      :model="form"
+      label-width="auto"
+      label-position="top"
+    >
+      <el-form-item
+        label="名称"
+        prop="name"
+        :rules="[{ required: true, message: '请输入名称' }]"
+      >
         <el-input v-model="form.name" autocomplete="off" />
       </el-form-item>
-      <el-form-item label="类型" prop="type" :rules="[{ required: true, message: '请选择类型' }]">
-        <el-select v-model="form.type" placeholder="请选择类型" default-first-option>
-          <el-option label="TCP" value="tcp" />
-          <el-option label="UDP" value="udp" />
+      <el-form-item
+        label="类型"
+        prop="type"
+        :rules="[{ required: true, message: '请选择类型' }]"
+      >
+        <el-select
+          v-model="form.type"
+          placeholder="请选择类型"
+          default-first-option
+        >
+          <el-option
+            v-for="tp in frpTypes"
+            :key="tp.value"
+            :label="tp.label"
+            :value="tp.value"
+          />
         </el-select>
       </el-form-item>
-      <el-form-item label="本地IP地址" prop="local_ip" :rules="[{ required: true, message: '请输入需要映射的本地IP地址' }]">
+      <el-form-item
+        label="本地IP地址"
+        prop="local_ip"
+        :rules="[{ required: true, message: '请输入需要映射的本地IP地址' }]"
+      >
         <el-input v-model="form.local_ip" autocomplete="off" />
       </el-form-item>
-      <el-form-item label="本地端口" prop="local_port" :rules="[{ required: true, message: '请输入需要映射的本地端口' }]">
+      <el-form-item
+        label="本地端口"
+        prop="local_port"
+        :rules="[{ required: true, message: '请输入需要映射的本地端口' }]"
+      >
         <el-input v-model="form.local_port" autocomplete="off" />
       </el-form-item>
-      <el-form-item label="服务器端口" prop="remote_port" :rules="[{ required: true, message: '请输入需要映射到的服务器端口' }]">
+      <el-form-item label="服务器端口" prop="remote_port">
         <el-input v-model="form.remote_port" autocomplete="off" />
+      </el-form-item>
+      <el-form-item label="加密传输" prop="use_encryption">
+        <el-radio-group v-model="form.use_encryption" class="ml-4">
+          <el-radio label="1" size="large">Option 1</el-radio>
+          <el-radio label="2" size="large">Option 2</el-radio>
+        </el-radio-group>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -34,9 +70,14 @@
 <script lang="ts" setup>
 import { ElMessage } from "element-plus";
 import { reactive, ref, watchEffect } from "vue";
-import { DEFAULT_IP_ADDRESS, ModalStatusCode, NetworkType, StatusCode } from "../../utils/consts";
+import {
+  DEFAULT_IP_ADDRESS,
+  ModalStatusCode,
+  NetworkType,
+  StatusCode,
+} from "../../utils/consts";
 import { FrpPayloadTypes, PayloadTypes } from "../../utils/types";
-import type { FormInstance } from 'element-plus'
+import type { FormInstance } from "element-plus";
 import { addForward, updateForward } from "../../api/frp";
 
 const visible = ref(false);
@@ -55,12 +96,44 @@ const props = defineProps({
 });
 
 const form = reactive({
-  name: '',
+  name: "",
   type: NetworkType.TCP,
   local_ip: DEFAULT_IP_ADDRESS,
-  local_port: '', // 0 ~ 65535
-  remote_port: '',
+  local_port: "", // 0 ~ 65535
+  remote_port: "",
+  use_encryption: false,
 });
+
+const frpTypes = ref([
+  {
+    label: "tcp",
+    value: "tcp",
+  },
+  {
+    label: "udp",
+    value: "udp",
+  },
+  {
+    label: "xtcp",
+    value: "xtcp",
+  },
+  {
+    label: "tcpmux",
+    value: "tcpmux",
+  },
+  {
+    label: "stcp",
+    value: "stcp",
+  },
+  {
+    label: "https",
+    value: "https",
+  },
+  {
+    label: "http",
+    value: "http",
+  },
+]);
 
 const clearForm = (el: FormInstance | undefined) => {
   if (!el) return;
@@ -76,8 +149,8 @@ watchEffect(() => {
   form.name = props.rowInfo.name;
   form.type = props.rowInfo.type;
   form.local_ip = props.rowInfo?.local_ip || DEFAULT_IP_ADDRESS;
-  form.local_port = props.rowInfo?.local_port ?? '';
-  form.remote_port = props.rowInfo?.remote_port ?? '';
+  form.local_port = props.rowInfo?.local_port ?? "";
+  form.remote_port = props.rowInfo?.remote_port ?? "";
 });
 
 const onCancel = () => {
@@ -131,5 +204,4 @@ defineExpose({
 });
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
