@@ -1,8 +1,7 @@
 <template>
-  <el-dialog v-model="visible" title="Hosts编辑" append-to-body>
+  <el-dialog v-model="visible" title="FRP配置添加" append-to-body>
     <el-form
       ref="formRef"
-      :inline="true"
       :model="form"
       label-width="auto"
       label-position="top"
@@ -22,6 +21,7 @@
         <el-select
           v-model="form.type"
           placeholder="请选择类型"
+          style="width: 100%"
           default-first-option
         >
           <el-option
@@ -32,49 +32,50 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item
-        label="内网地址"
-        prop="local_ip"
-        :rules="[{ required: true, message: '请输入需要映射的内网地址' }]"
-      >
-        <el-input v-model="form.local_ip" autocomplete="off" />
-      </el-form-item>
-      <el-form-item
-        label="内网端口"
-        prop="local_port"
-        :rules="[{ required: true, message: '请输入需要映射的内网端口' }]"
-      >
-        <el-input v-model="form.local_port" autocomplete="off" />
-      </el-form-item>
-      <el-form-item label="服务器端口" prop="remote_port">
-        <el-input v-model="form.remote_port" autocomplete="off" />
-      </el-form-item>
-      <el-form-item label="转发带宽" prop="bandwidth_limit">
-        <el-input v-model="form.bandwidth_limit" autocomplete="off" />
-      </el-form-item>
-      <el-form-item label="插件" prop="plugin">
-        <el-input v-model="form.plugin" autocomplete="off" />
-      </el-form-item>
-      <el-form-item label="插件用户" prop="plugin_user">
-        <el-input v-model="form.plugin_user" autocomplete="off" />
-      </el-form-item>
-      <el-form-item label="插件密码" prop="plugin_passwd">
-        <el-input v-model="form.plugin_user" autocomplete="off" />
-      </el-form-item>
-      <el-form-item label="sk" prop="sk">
-        <el-input v-model="form.sk" autocomplete="off" />
-      </el-form-item>
-      <el-form-item label="加密传输" prop="use_encryption">
-        <el-radio-group v-model="form.use_encryption" class="ml-4">
-          <el-radio :label="true">加密</el-radio>
-          <el-radio :label="false">不加密</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="压缩传输" prop="use_encryption">
-        <el-radio-group v-model="form.use_compression" class="ml-4">
-          <el-radio :label="true">压缩</el-radio>
-          <el-radio :label="false">不压缩</el-radio>
-        </el-radio-group>
+      <div v-for="row in form.frpConfigs">
+        <el-row :gutter="10">
+          <el-col :span="11">
+            <el-form-item
+                label="配置类型"
+                prop="name"
+                :rules="[{ required: true, message: '请选择配置类型' }]"
+            >
+              <el-select
+                  v-model="row.name"
+                  style="width: 100%"
+                  placeholder="请选择配置类型"
+              >
+                <el-option
+                    v-for="tt in frpConfigTypes"
+                    :key="tt.value"
+                    :label="tt.label"
+                    :value="tt.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="10">
+            <el-form-item
+                label="配置值"
+                prop="value"
+                :rules="[{ required: true, message: '请输入配置值' }]"
+            >
+              <el-input v-model="row.value" autocomplete="off" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="2">
+            <el-form-item label="aa">
+              <el-button type="danger" :icon="Delete" circle />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </div>
+      <el-form-item>
+        <div style="width: 100%; display: flex; align-items: center; justify-content: flex-end;">
+          <el-button :icon="CirclePlus">
+            添加新的配置项
+          </el-button>
+        </div>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -96,12 +97,13 @@ import {
   ModalStatusCode,
   NetworkType,
   StatusCode,
-} from "../../utils/consts";
-import { FrpPayloadTypes, PayloadTypes } from "../../utils/types";
+} from "@/utils/consts";
+import { FrpPayloadTypes, PayloadTypes } from "@/utils/types";
 import type { FormInstance } from "element-plus";
-import { addForward, updateForward } from "../../api/frp";
+import { addForward, updateForward } from "@/api/frp";
+import { CirclePlus, Delete } from "@element-plus/icons-vue"
 
-const visible = ref(false);
+const visible = ref(true);
 const submitting = ref(false);
 const formRef = ref<FormInstance>();
 
@@ -129,7 +131,20 @@ const form = reactive({
   bandwidth_limit: "",
   use_encryption: false,
   use_compression: false,
+  frpConfigs: [
+    {
+      name: "",
+      value: "",
+    }
+  ] as { name: string, value: any }[],
 });
+
+const frpConfigTypes = ref([
+  {
+    label: "plugin",
+    value: "plugin",
+  },
+]);
 
 const frpTypes = ref([
   {
