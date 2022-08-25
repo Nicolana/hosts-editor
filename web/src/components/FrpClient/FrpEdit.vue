@@ -36,46 +36,69 @@
         <el-row :gutter="10">
           <el-col :span="11">
             <el-form-item
-                label="配置类型"
-                prop="name"
-                :rules="[{ required: true, message: '请选择配置类型' }]"
+              label="配置类型"
+              prop="name"
+              :rules="[{ required: true, message: '请选择配置类型' }]"
             >
               <el-select
-                  v-model="row.name"
-                  style="width: 100%"
-                  placeholder="请选择配置类型"
+                v-model="row.name"
+                style="width: 100%"
+                placeholder="请选择配置类型"
               >
                 <el-option
-                    v-for="tt in frpConfigTypes"
-                    :key="tt.value"
-                    :label="tt.label"
-                    :value="tt.value"
+                  v-for="tt in frpConfigTypes"
+                  :key="tt.value"
+                  :label="tt.label"
+                  :value="tt.value"
                 />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="10">
             <el-form-item
-                label="配置值"
-                prop="value"
-                :rules="[{ required: true, message: '请输入配置值' }]"
+              label="配置值"
+              prop="value"
+              :rules="[{ required: true, message: '请输入配置值' }]"
             >
               <el-input v-model="row.value" autocomplete="off" />
             </el-form-item>
           </el-col>
           <el-col :span="2">
             <el-form-item label="操作">
-              <el-button type="danger" :icon="Delete" circle @click="deleteRow(index)" />
+              <el-button
+                type="danger"
+                :icon="Delete"
+                circle
+                @click="deleteRow(index)"
+              />
             </el-form-item>
           </el-col>
         </el-row>
       </div>
       <el-form-item>
-        <div>
-          <el-button :icon="CirclePlus" @click="addRow">
-            添加新的配置项
-          </el-button>
-        </div>
+        <el-row :gutter="5">
+          <el-col :span="10">
+            <el-select
+              v-model="addType"
+              filterable
+              default-first-option
+              placeholder="请选择配置参数"
+            >
+              <el-option
+                v-for="item in options"
+                filterable
+                :key="item.name"
+                :label="item.name"
+                :value="item.name"
+              />
+            </el-select>
+          </el-col>
+          <el-col :span="12">
+            <el-button :icon="CirclePlus" @click="addRow">
+              添加新的配置项
+            </el-button>
+          </el-col>
+        </el-row>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -90,23 +113,30 @@
 </template>
 
 <script lang="ts" setup>
+import type { FormInstance } from "element-plus";
 import { ElMessage } from "element-plus";
-import { reactive, ref, watchEffect } from "vue";
+import { computed, reactive, ref, watchEffect } from "vue";
 import {
   DEFAULT_IP_ADDRESS,
   ModalStatusCode,
   NetworkType,
   StatusCode,
 } from "@/utils/consts";
-import { FrpPayloadTypes, PayloadTypes } from "@/utils/types";
-import type { FormInstance } from "element-plus";
+import { FrpPayloadTypes } from "@/utils/types";
 import { addForward, updateForward } from "@/api/frp";
-import { CirclePlus, Delete } from "@element-plus/icons-vue"
-import { frpTypes } from "./consts";
+import { CirclePlus, Delete } from "@element-plus/icons-vue";
+import {
+  FrpConfigItemType,
+  FrpFormItemEnum,
+  FrpFormItemType,
+  frpTypes,
+  FrpClientConfig,
+} from "./consts";
 
 const visible = ref(true);
 const submitting = ref(false);
 const formRef = ref<FormInstance>();
+const addType = ref("");
 
 const props = defineProps({
   rowInfo: {
@@ -121,32 +151,39 @@ const props = defineProps({
 
 const form = reactive({
   name: "",
-  type: NetworkType.TCP,
-  local_ip: DEFAULT_IP_ADDRESS,
-  local_port: "", // 0 ~ 65535
-  remote_port: "",
-  plugin: "",
-  sk: "",
-  plugin_user: "",
-  plugin_passwd: "",
-  bandwidth_limit: "",
-  use_encryption: false,
-  use_compression: false,
+  // type: NetworkType.TCP,
+  // local_ip: DEFAULT_IP_ADDRESS,
+  // local_port: "", // 0 ~ 65535
+  // remote_port: "",
+  // plugin: "",
+  // sk: "",
+  // plugin_user: "",
+  // plugin_passwd: "",
+  // bandwidth_limit: "",
+  // use_encryption: false,
+  // use_compression: false,
   frpConfigs: [
     {
-      name: "",
+      name: "name",
       value: "",
-    }
-  ] as { name: string, value: any }[],
+      type: FrpFormItemType.text,
+    },
+  ] as FrpConfigItemType[],
 });
 
+const options = computed(() =>
+  FrpClientConfig.filter(
+    (itme) => form.frpConfigs.findIndex((row) => row.name !== itme.name) > -1
+  )
+);
+
 const addRow = () => {
-  form.frpConfigs.push({ name: "", value: "" })
-}
+  form.frpConfigs.push({ name: "", value: "", type: FrpFormItemType.text });
+};
 
 const deleteRow = (index: number) => {
   form.frpConfigs.splice(index, 1);
-}
+};
 
 const frpConfigTypes = ref([
   {

@@ -25,10 +25,10 @@
 <script lang="ts" setup>
 import { ElMessage } from "element-plus";
 import { reactive, ref, watchEffect } from "vue";
-import { StatusCode } from "../../utils/consts";
-import { FrpServerTypes } from "../../utils/types";
+import { StatusCode } from "@/utils/consts";
+import { FrpServerTypes } from "@/utils/types";
 import type { FormInstance } from 'element-plus'
-import { updateServerConfig } from "../../api/frp";
+import { updateServerConfig } from "@/api/frp";
 
 const visible = ref(false);
 const submitting = ref(false);
