@@ -32,7 +32,7 @@
           />
         </el-select>
       </el-form-item>
-      <div v-for="row in form.frpConfigs">
+      <div v-for="(row, index) in form.frpConfigs" :key="index">
         <el-row :gutter="10">
           <el-col :span="11">
             <el-form-item
@@ -64,15 +64,15 @@
             </el-form-item>
           </el-col>
           <el-col :span="2">
-            <el-form-item label="aa">
-              <el-button type="danger" :icon="Delete" circle />
+            <el-form-item label="操作">
+              <el-button type="danger" :icon="Delete" circle @click="deleteRow(index)" />
             </el-form-item>
           </el-col>
         </el-row>
       </div>
       <el-form-item>
-        <div style="width: 100%; display: flex; align-items: center; justify-content: flex-end;">
-          <el-button :icon="CirclePlus">
+        <div>
+          <el-button :icon="CirclePlus" @click="addRow">
             添加新的配置项
           </el-button>
         </div>
@@ -102,6 +102,7 @@ import { FrpPayloadTypes, PayloadTypes } from "@/utils/types";
 import type { FormInstance } from "element-plus";
 import { addForward, updateForward } from "@/api/frp";
 import { CirclePlus, Delete } from "@element-plus/icons-vue"
+import { frpTypes } from "./consts";
 
 const visible = ref(true);
 const submitting = ref(false);
@@ -139,41 +140,18 @@ const form = reactive({
   ] as { name: string, value: any }[],
 });
 
+const addRow = () => {
+  form.frpConfigs.push({ name: "", value: "" })
+}
+
+const deleteRow = (index: number) => {
+  form.frpConfigs.splice(index, 1);
+}
+
 const frpConfigTypes = ref([
   {
     label: "plugin",
     value: "plugin",
-  },
-]);
-
-const frpTypes = ref([
-  {
-    label: "tcp",
-    value: "tcp",
-  },
-  {
-    label: "udp",
-    value: "udp",
-  },
-  {
-    label: "xtcp",
-    value: "xtcp",
-  },
-  {
-    label: "tcpmux",
-    value: "tcpmux",
-  },
-  {
-    label: "stcp",
-    value: "stcp",
-  },
-  {
-    label: "https",
-    value: "https",
-  },
-  {
-    label: "http",
-    value: "http",
   },
 ]);
 
