@@ -15,6 +15,7 @@ export enum FrpFormItemType {
   radio = "radio",
   number = "number",
   enum = "enum",
+  switch = "switch",
 }
 
 export const FrpFormItemEnum = {
@@ -39,6 +40,15 @@ export interface FrpConfigItemType {
   min?: number;
   max?: number;
 }
+
+export const healthCheckEnum = {
+  [NetworkType.TCP]: {
+    text: "TCP",
+  },
+  [NetworkType.HTTP]: {
+    text: "HTTP",
+  },
+};
 
 export const FrpClientConfig: FrpConfigItemType[] = [
   {
@@ -106,11 +116,139 @@ export const FrpClientConfig: FrpConfigItemType[] = [
   {
     name: "加密传输",
     key: "use_encryption",
-    type: FrpFormItemType.radio,
+    type: FrpFormItemType.switch,
     value: false,
+  },
+  {
+    name: "压缩传输",
+    key: "use_compression",
+    type: FrpFormItemType.switch,
+    value: false,
+  },
+  // # frps will load balancing connections for proxies in same group
+  {
+    name: "group",
+    key: "group",
+    type: FrpFormItemType.text,
+    value: "",
+  },
+  // # group should have same group key
+  {
+    name: "group_key",
+    key: "group_key",
+    type: FrpFormItemType.text,
+    value: "",
+  },
+  // # enable health check for the backend service, it support 'tcp' and 'http' now
+  // # frpc will connect local service's port to detect it's healthy status
+  {
+    name: "health_check_type",
+    key: "health_check_type",
+    type: FrpFormItemType.enum,
+    valueEnum: healthCheckEnum,
+  },
+  // # health check connection timeout，单位秒
+  {
+    name: "health_check_timeout_s",
+    key: "health_check_timeout_s",
+    type: FrpFormItemType.number,
+    value: 3,
+  },
+  // # if continuous failed in 3 times, the proxy will be removed from frps
+  {
+    name: "health_check_max_failed",
+    key: "health_check_max_failed",
+    type: FrpFormItemType.number,
+    value: 3,
+  },
+  //  # every 10 seconds will do a health check
+  {
+    name: "health_check_interval_s",
+    key: "health_check_interval_s",
+    type: FrpFormItemType.number,
+    value: 10,
+  },
+  // # http username and password are safety certification for http protocol
+  // # if not set, you can access this custom_domains without certification
+  {
+    name: "http_user",
+    key: "http_user",
+    type: FrpFormItemType.text,
+    value: "admin",
+  },
+  {
+    name: "http_pwd",
+    key: "http_pwd",
+    type: FrpFormItemType.text,
+    value: "admin",
+  },
+  // # if domain for frps is frps.com, then you can access [web01] proxy by URL http://web01.frps.com
+  {
+    name: "subdomain",
+    key: "subdomain",
+    type: FrpFormItemType.text,
+    value: "web01",
+  },
+  {
+    name: "custom_domains",
+    key: "custom_domains",
+    type: FrpFormItemType.text,
+    value: "web01.yourdomain.com",
+  },
+  // # locations is only available for http type
+  {
+    name: "locations",
+    key: "locations",
+    type: FrpFormItemType.text,
+    value: "/,/pic",
+  },
+  {
+    name: "host_header_rewrite",
+    key: "host_header_rewrite",
+    type: FrpFormItemType.text,
+    value: "example.com",
+  },
+  // # if plugin is defined, local_ip and local_port is useless
+  // # plugin will handle connections got from frps
+  {
+    name: "plugin",
+    key: "plugin",
+    type: FrpFormItemType.text,
+    value: "unix_domain_socket",
+  },
+  // # params with prefix "plugin_" that plugin needed
+  {
+    name: "plugin_unix_path",
+    key: "plugin_unix_path",
+    type: FrpFormItemType.text,
+    value: "/var/run/docker.sock",
+  },
+  {
+    name: "bind_addr",
+    key: "bind_addr",
+    type: FrpFormItemType.text,
+    value: "127.0.0.1",
+  },
+  {
+    name: "bind_port",
+    key: "bind_port",
+    type: FrpFormItemType.number,
+    value: 9001,
+  },
+  {
+    name: "server_name",
+    key: "server_name",
+    type: FrpFormItemType.text,
+    value: "secret_tcp",
   },
 ];
 
 export const GetFormItemByKey = (key: string) => {
-  return FrpClientConfig.find((item) => item.key === key);
+  const item = FrpClientConfig.find((item) => item.key === key);
+  if (!item) {
+    return false;
+    // throw new Error("不要用它获取不在列表里面的值");
+  }
+  // 浅拷贝
+  return { ...item };
 };

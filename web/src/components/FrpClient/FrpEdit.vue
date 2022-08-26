@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="visible" title="FRP配置添加" append-to-body>
+  <el-dialog v-model="visible" title="FRP配置添加" append-to-body width="800px">
     <el-form
       ref="formRef"
       :model="form"
@@ -60,6 +60,16 @@
                   :value="enumKey"
                 />
               </el-select>
+            </el-form-item>
+            <!-- Switch类型 -->
+            <el-form-item
+              :label="row.name"
+              :prop="`frpConfigs[${index}].value`"
+              :rules="[{ required: true, message: `请选择${row.key}` }]"
+              layout="inline"
+              v-else-if="row.type === FrpFormItemType.switch"
+            >
+              <el-switch v-model="row.value" />
             </el-form-item>
           </el-col>
           <el-col :span="2">
@@ -172,7 +182,7 @@ const options = computed(() => {
 const addRow = () => {
   const item = FrpClientConfig.find((conf) => conf.key === addType.value);
   if (item) {
-    form.frpConfigs.push(item);
+    form.frpConfigs.push({ ...item });
     addType.value = "";
   }
 };
