@@ -13,54 +13,53 @@
       >
         <el-input v-model="form.name" autocomplete="off" />
       </el-form-item>
-      <el-form-item
-        label="类型"
-        prop="type"
-        :rules="[{ required: true, message: '请选择类型' }]"
-      >
-        <el-select
-          v-model="form.type"
-          placeholder="请选择类型"
-          style="width: 100%"
-          default-first-option
-        >
-          <el-option
-            v-for="tp in frpTypes"
-            :key="tp.value"
-            :label="tp.label"
-            :value="tp.value"
-          />
-        </el-select>
-      </el-form-item>
       <div v-for="(row, index) in form.frpConfigs" :key="index">
         <el-row :gutter="10">
-          <el-col :span="11">
+          <el-col :span="21">
+            <!-- 文本类型 -->
             <el-form-item
-              label="配置类型"
-              prop="name"
-              :rules="[{ required: true, message: '请选择配置类型' }]"
-            >
-              <el-select
-                v-model="row.name"
-                style="width: 100%"
-                placeholder="请选择配置类型"
-              >
-                <el-option
-                  v-for="tt in frpConfigTypes"
-                  :key="tt.value"
-                  :label="tt.label"
-                  :value="tt.value"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="10">
-            <el-form-item
-              label="配置值"
-              prop="value"
-              :rules="[{ required: true, message: '请输入配置值' }]"
+              :label="row.name"
+              :prop="`frpConfigs[${index}].value`"
+              :rules="[{ required: true, message: `请输入${row.key}` }]"
+              v-if="row.type === FrpFormItemType.text"
             >
               <el-input v-model="row.value" autocomplete="off" />
+            </el-form-item>
+            <!-- 数值类型 -->
+            <el-form-item
+              :label="row.name"
+              :prop="`frpConfigs[${index}].value`"
+              :rules="[{ required: true, message: `请输入${row.key}` }]"
+              v-if="row.type === FrpFormItemType.number"
+            >
+              <el-input-number
+                v-model="row.value"
+                type="number"
+                :min="row.min"
+                :max="row.max"
+                autocomplete="off"
+              />
+            </el-form-item>
+            <!-- 枚举类型 -->
+            <el-form-item
+              :label="row.name"
+              :prop="`frpConfigs[${index}].value`"
+              :rules="[{ required: true, message: `请选择${row.key}` }]"
+              v-else-if="row.type === FrpFormItemType.enum"
+            >
+              <el-select
+                v-model="row.value"
+                :placeholder="`请选择${row.key}`"
+                style="width: 100%"
+                default-first-option
+              >
+                <el-option
+                  v-for="(enumValue, enumKey) in row.valueEnum"
+                  :key="enumKey"
+                  :label="enumValue.text"
+                  :value="enumKey"
+                />
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="2">
@@ -75,9 +74,10 @@
           </el-col>
         </el-row>
       </div>
+      <!-- RecordCreator -->
       <el-form-item>
         <el-row :gutter="5">
-          <el-col :span="10">
+          <el-col :span="8">
             <el-select
               v-model="addType"
               filterable
@@ -87,15 +87,20 @@
               <el-option
                 v-for="item in options"
                 filterable
-                :key="item.name"
+                :key="item.key"
                 :label="item.name"
-                :value="item.name"
+                :value="item.key"
               />
             </el-select>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="8">
             <el-button :icon="CirclePlus" @click="addRow">
               添加新的配置项
+            </el-button>
+          </el-col>
+          <el-col :span="8">
+            <el-button type="primary" @click="addRow">
+              一键添加预设配置
             </el-button>
           </el-col>
         </el-row>
@@ -119,7 +124,6 @@ import { computed, reactive, ref, watchEffect } from "vue";
 import {
   DEFAULT_IP_ADDRESS,
   ModalStatusCode,
-  NetworkType,
   StatusCode,
 } from "@/utils/consts";
 import { FrpPayloadTypes } from "@/utils/types";
@@ -127,11 +131,12 @@ import { addForward, updateForward } from "@/api/frp";
 import { CirclePlus, Delete } from "@element-plus/icons-vue";
 import {
   FrpConfigItemType,
-  FrpFormItemEnum,
   FrpFormItemType,
-  frpTypes,
+  NetworkType,
+  GetFormItemByKey,
   FrpClientConfig,
 } from "./consts";
+import { debug } from "console";
 
 const visible = ref(true);
 const submitting = ref(false);
@@ -151,34 +156,25 @@ const props = defineProps({
 
 const form = reactive({
   name: "",
-  // type: NetworkType.TCP,
-  // local_ip: DEFAULT_IP_ADDRESS,
-  // local_port: "", // 0 ~ 65535
-  // remote_port: "",
-  // plugin: "",
-  // sk: "",
-  // plugin_user: "",
-  // plugin_passwd: "",
-  // bandwidth_limit: "",
-  // use_encryption: false,
-  // use_compression: false,
   frpConfigs: [
-    {
-      name: "name",
-      value: "",
-      type: FrpFormItemType.text,
-    },
+    GetFormItemByKey("type"), // 设置默认填类型
   ] as FrpConfigItemType[],
 });
 
-const options = computed(() =>
-  FrpClientConfig.filter(
-    (itme) => form.frpConfigs.findIndex((row) => row.name !== itme.name) > -1
-  )
-);
+// 所有可选择的类型选项
+const options = computed(() => {
+  const data = FrpClientConfig.filter(
+    (item) => form.frpConfigs.findIndex((row) => row.key === item.key) < 0
+  );
+  return data;
+});
 
 const addRow = () => {
-  form.frpConfigs.push({ name: "", value: "", type: FrpFormItemType.text });
+  const item = FrpClientConfig.find((conf) => conf.key === addType.value);
+  if (item) {
+    form.frpConfigs.push(item);
+    addType.value = "";
+  }
 };
 
 const deleteRow = (index: number) => {
