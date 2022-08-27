@@ -1,11 +1,12 @@
 package frp
 
 import (
+	"strconv"
+	"strings"
+
 	"github.com/Nicolana/hosts-editor/src/server/models"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/ini.v1"
-	"strconv"
-	"strings"
 )
 
 type ServerConfig struct {
@@ -121,10 +122,7 @@ func (f *frpcIni) ToMap(item ini.Section) (gin.H, error) {
 // UpdateSecByName 根据Sec名称更新该Sec中的映射数据
 func (f *frpcIni) UpdateSecByName(item models.FrpSectionType) (gin.H, error) {
 	sec := f.cfg.Section(item.Name)
-	sec.Key("type").SetValue(item.NetType)
-	sec.Key("local_ip").SetValue(item.LocalIp)
-	sec.Key("local_port").SetValue(strconv.Itoa(item.LocalPort))
-	sec.Key("remote_port").SetValue(strconv.Itoa(item.RemotePort))
+	sec.MapTo(item)
 	err := f.Save()
 	if err != nil {
 		return gin.H{}, err
@@ -138,10 +136,9 @@ func (f *frpcIni) AddNewSec(item models.FrpSectionType) (gin.H, error) {
 	if err != nil {
 		return gin.H{}, err
 	}
-	sec.Key("type").SetValue(item.NetType)
-	sec.Key("local_ip").SetValue(item.LocalIp)
-	sec.Key("local_port").SetValue(strconv.Itoa(item.LocalPort))
-	sec.Key("remote_port").SetValue(strconv.Itoa(item.RemotePort))
+	// 将结构数据映射到Section里面去
+	sec.ReflectFrom(&item)
+
 	err = f.Save()
 	if err != nil {
 		return gin.H{}, err
