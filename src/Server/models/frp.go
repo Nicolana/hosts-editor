@@ -31,9 +31,9 @@ type FrpSectionType struct {
 	Plugin               string `json:"plugin" ini:"plugin"`
 	PluginUnixPath       string `json:"plugin_unix_path" ini:"plugin_unix_path"`
 	BindAddr             string `json:"bind_addr" ini:"bind_addr"`
-	BindPort             int    `json:"bind_port" ini:"bind_port"`
-	ServerName           int    `json:"server_name" ini:"server_name"`
-	Role                 int    `json:"role" ini:"role"`
+	BindPort             string `json:"bind_port" ini:"bind_port"`
+	ServerName           string `json:"server_name" ini:"server_name"`
+	Role                 string `json:"role" ini:"role"`
 }
 
 type FrpDelSectionType struct {
