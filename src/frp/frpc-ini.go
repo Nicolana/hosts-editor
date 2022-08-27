@@ -55,7 +55,7 @@ func (f *frpcIni) GetCommon() gin.H {
 }
 
 // UpdateCommon 更新Common的数据
-func (f *frpcIni) UpdateCommon(item models.FrpCommonSection) (gin.H, error) {
+func (f *frpcIni) UpdateCommon(item models.FrpServer) (gin.H, error) {
 	// 如果当前服务器数据不存在，则创建该数据Section
 	if !f.cfg.HasSection(ServerConfigName) {
 		if _, err := f.cfg.NewSection(ServerConfigName); err != nil {
@@ -124,7 +124,23 @@ func (f *frpcIni) ToMap(item ini.Section) (gin.H, error) {
 // UpdateSecByName 根据Sec名称更新该Sec中的映射数据
 func (f *frpcIni) UpdateSecByName(item models.FrpSectionType) (gin.H, error) {
 	sec := f.cfg.Section(item.Name)
-	sec.ReflectFrom(&item)
+	// 将结构数据映射到Section里面去
+	sVal := reflect.ValueOf(item)
+	sType := reflect.TypeOf(item)
+	if sType.Kind() == reflect.Ptr {
+		// 用Elem() 获得实际的value
+		sVal = sVal.Elem()
+		sType = sType.Elem()
+	}
+	for i := 0; i < sVal.NumField(); i++ {
+		f := sType.Field(i)
+		key := f.Tag.Get("json")
+		val := sVal.Field(i).Interface()
+		if val == "" {
+			continue
+		}
+		sec.Key(key).SetValue(fmt.Sprintf("%v", val))
+	}
 	err := f.Save()
 	if err != nil {
 		return gin.H{}, err

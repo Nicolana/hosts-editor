@@ -133,7 +133,7 @@ func GetServerConfig(c *gin.Context) {
 
 // UpdateServerConfig 更新服务器配置
 func UpdateServerConfig(c *gin.Context) {
-	var updateData models.FrpCommonSection
+	var updateData models.FrpServer
 	if err := c.BindJSON(&updateData); err != nil {
 		c.JSON(http.StatusOK, gin.H{"message": "参数有误: " + err.Error(), "data": gin.H{}, "code": config.ErrorCode})
 		return
