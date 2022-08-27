@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import useFrpStore from "@/store/useFrpStore";
 import { ElMessage, messageConfig } from "element-plus";
-import { computed, onBeforeUnmount, ref } from "vue";
+import { computed, onBeforeMount, onBeforeUnmount, ref } from "vue";
 import { getFrpStatus, restartFrp, startFrp, stopFrp } from "../../api/frp";
 import { FrpExecStatus, StatusCode } from "../../utils/consts";
 
@@ -54,12 +54,21 @@ const serverConfig = computed(() => frpStore.server);
 
 getStatus();
 
-let statusInfoId = setInterval(() => {
-  getStatus();
-}, 1000 * 2);
+const statusInfoId = ref<any>(0);
+
+const startInterval = () => {
+  statusInfoId.value = setInterval(() => {
+    getStatus();
+  }, 1000 * 2);
+};
+
+onBeforeMount(() => {
+  console.log("ENV =", process.env.NODE_ENV);
+  process.env.NODE_ENV === "production" && startInterval();
+});
 
 onBeforeUnmount(() => {
-  clearInterval(statusInfoId);
+  clearInterval(statusInfoId.value);
   console.log("卸载frp状态加载");
 });
 </script>

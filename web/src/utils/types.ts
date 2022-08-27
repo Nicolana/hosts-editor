@@ -1,4 +1,4 @@
-import { NetworkType } from "./consts";
+import { FrpConfigItemType } from "@/components/FrpClient/consts";
 
 export interface PayloadTypes {
   row?: number;
@@ -16,10 +16,7 @@ export interface PaginationType {
 
 export interface FrpPayloadTypes {
   name?: string;
-  type: NetworkType;
-  local_ip: string;
-  local_port: number;
-  remote_port: number;
+  frpConfigs: FrpConfigItemType[];
 }
 
 export interface FrpServerTypes {

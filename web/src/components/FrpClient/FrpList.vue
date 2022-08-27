@@ -9,9 +9,10 @@ import { getForwards, delForward, getServerConfig } from "../../api/frp";
 import FrpStatus from "./FrpStatus.vue";
 import FrpServerEdit from "./FrpServerEdit.vue";
 import useFrpStore from "@/store/useFrpStore";
+import { FrpConfigItemType, FrpFormItemType, GetFormItemByKey } from "./consts";
 
 const tableData = ref([]);
-const rowInfo = ref({});
+const rowInfo = ref<{ [key: string]: any }>({});
 const modalRef = ref(null);
 const serverModalRef = ref();
 const modalStatus = ref(ModalStatusCode.Create); // 默认是创建
@@ -60,7 +61,25 @@ const onCreate = () => {
 
 const onEdit = (row: any) => {
   modalStatus.value = ModalStatusCode.Edit;
-  rowInfo.value = row;
+  const payload: { [key: string]: any } = { ...rowInfo };
+  payload.name = row.name;
+  const frpConfigs: FrpConfigItemType[] = [];
+  for (const key of Object.keys(row)) {
+    if (key === "name") {
+      continue;
+    }
+    const item = GetFormItemByKey(key);
+    if (item) {
+      if (item.type === FrpFormItemType.number) {
+        item.value = +row[key];
+      } else {
+        item.value = row[key];
+      }
+      frpConfigs.push(item);
+    }
+  }
+  payload.configs = frpConfigs;
+  rowInfo.value = payload;
   // @ts-ignore
   modalRef.value?.toggleVisible();
 };

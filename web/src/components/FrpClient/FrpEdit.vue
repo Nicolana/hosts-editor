@@ -109,9 +109,23 @@
             </el-button>
           </el-col>
           <el-col :span="8">
-            <el-button type="primary" @click="addRow">
-              一键添加预设配置
-            </el-button>
+            <el-dropdown>
+              <el-button type="primary">
+                添加预设配置<el-icon class="el-icon--right"
+                  ><arrow-down
+                /></el-icon>
+              </el-button>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item
+                    v-for="(item, index) in presetConfig.arr"
+                    :key="index"
+                    @click="onPresetAdd(index)"
+                    >{{ item.name }}</el-dropdown-item
+                  >
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
           </el-col>
         </el-row>
       </el-form-item>
@@ -128,27 +142,20 @@
 </template>
 
 <script lang="ts" setup>
-import type { FormInstance } from "element-plus";
+import { FormInstance, messageConfig } from "element-plus";
 import { ElMessage } from "element-plus";
 import { computed, reactive, ref, watchEffect } from "vue";
-import {
-  DEFAULT_IP_ADDRESS,
-  ModalStatusCode,
-  StatusCode,
-} from "@/utils/consts";
-import { FrpPayloadTypes } from "@/utils/types";
+import { ModalStatusCode, StatusCode } from "@/utils/consts";
 import { addForward, updateForward } from "@/api/frp";
 import { CirclePlus, Delete } from "@element-plus/icons-vue";
 import {
   FrpConfigItemType,
   FrpFormItemType,
-  NetworkType,
   GetFormItemByKey,
   FrpClientConfig,
 } from "./consts";
-import { debug } from "console";
 
-const visible = ref(true);
+const visible = ref(false);
 const submitting = ref(false);
 const formRef = ref<FormInstance>();
 const addType = ref("");
@@ -178,6 +185,49 @@ const options = computed(() => {
   );
   return data;
 });
+
+// 预设配置
+const presetConfig = reactive({
+  arr: [
+    {
+      name: "普通TCP/UDP服务",
+      keys: ["type", "local_ip", "local_port", "remote_port"],
+    },
+    {
+      name: "WEB服务",
+      keys: [
+        "type",
+        "local_ip",
+        "local_port",
+        "remote_port",
+        "use_encryption",
+        "use_compression",
+        "http_user",
+        "http_pwd",
+        "subdomain",
+        "custom_domains",
+        "locations",
+      ],
+    },
+    {
+      name: "P2P-TCP",
+      keys: [
+        "type",
+        "sk",
+        "local_ip",
+        "local_port",
+        "use_encryption",
+        "use_compression",
+      ],
+    },
+  ],
+});
+
+const onPresetAdd = (index: number) => {
+  form.frpConfigs = presetConfig.arr[index].keys.map((key) =>
+    GetFormItemByKey(key)
+  );
+};
 
 const addRow = () => {
   const item = FrpClientConfig.find((conf) => conf.key === addType.value);
@@ -209,11 +259,12 @@ const toggleVisible = () => {
 };
 
 watchEffect(() => {
+  if (props.rowInfo.configs) {
+    form.frpConfigs = props.rowInfo.configs;
+  } else {
+    form.frpConfigs = [GetFormItemByKey("type")];
+  }
   form.name = props.rowInfo.name;
-  form.type = props.rowInfo.type;
-  form.local_ip = props.rowInfo?.local_ip || DEFAULT_IP_ADDRESS;
-  form.local_port = props.rowInfo?.local_port ?? "";
-  form.remote_port = props.rowInfo?.remote_port ?? "";
 });
 
 const onCancel = () => {
@@ -222,14 +273,14 @@ const onCancel = () => {
 };
 
 const onConfirm = async () => {
-  const payload: FrpPayloadTypes = {
-    name: form.name,
-    type: form.type,
-    local_ip: form.local_ip,
-    local_port: +form.local_port,
-    remote_port: +form.remote_port,
-  };
   submitting.value = true;
+  const payload: { [keyProp: string]: any } = {
+    name: form.name,
+  };
+
+  for (let conf of form.frpConfigs) {
+    payload[conf.key] = conf.value;
+  }
   if (props.modalStatus === ModalStatusCode.Edit) {
     try {
       const { data: res } = await updateForward(payload);

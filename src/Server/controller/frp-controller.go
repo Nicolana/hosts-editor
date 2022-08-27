@@ -1,12 +1,14 @@
 package controller
 
 import (
+	"fmt"
+	"net/http"
+	"strconv"
+
 	"github.com/Nicolana/hosts-editor/src/frp"
 	"github.com/Nicolana/hosts-editor/src/server/config"
 	"github.com/Nicolana/hosts-editor/src/server/models"
 	"github.com/gin-gonic/gin"
-	"net/http"
-	"strconv"
 )
 
 // AddForward 添加新的映射
@@ -16,6 +18,7 @@ func AddForward(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "字段不正确", "data": gin.H{}, "code": config.ErrorCode})
 		return
 	}
+	fmt.Println(updateData)
 	item, err := frp.FrpcIni.AddNewSec(updateData)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"message": err.Error(), "data": gin.H{}, "code": config.ErrorCode})

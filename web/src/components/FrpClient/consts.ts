@@ -241,14 +241,22 @@ export const FrpClientConfig: FrpConfigItemType[] = [
     type: FrpFormItemType.text,
     value: "secret_tcp",
   },
+  {
+    name: "role",
+    key: "role",
+    type: FrpFormItemType.text,
+    value: "visitor",
+  },
 ];
 
+export const FrpClientConfigKeyMap = {} as { [prop: string]: any };
+for (const index in FrpClientConfig) {
+  const item = FrpClientConfig[index];
+  FrpClientConfigKeyMap[item.key] = index;
+}
+
 export const GetFormItemByKey = (key: string) => {
-  const item = FrpClientConfig.find((item) => item.key === key);
-  if (!item) {
-    return false;
-    // throw new Error("不要用它获取不在列表里面的值");
-  }
-  // 浅拷贝
-  return { ...item };
+  const index =
+    FrpClientConfigKeyMap[key] > -1 ? FrpClientConfigKeyMap[key] : 0;
+  return { ...FrpClientConfig[index] };
 };
