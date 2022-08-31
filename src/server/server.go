@@ -3,7 +3,6 @@ package server
 import (
 	"net/http"
 
-	"github.com/Nicolana/hosts-editor/src/server/global"
 	"github.com/Nicolana/hosts-editor/src/server/router"
 	"github.com/gin-gonic/gin"
 )
@@ -11,7 +10,7 @@ import (
 func RunServer() {
 	r := gin.Default()
 	router.InitRouter(r)
-	global.SystemInit()
+	// global.SystemInit()
 	r.LoadHTMLFiles("./web/dist/index.html")
 	r.Static("/assets", "./web/dist/assets")
 	r.StaticFile("vite.svg", "./web/dist")
